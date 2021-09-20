@@ -1,119 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace Algoritms
 {
     class Program
     {
-        public class Node
+
+        static (int m, int n) GetBoardSize()
         {
-            public int? Data { get; set; }
-            public Node Left { get; set; }
-            public Node Right { get; set; }
-
-            public Node(int data, Node left, Node right)
-            {
-                Data = data;
-                Left = left;
-                Right = right;
-            }
-
-            public Node() { }
-
-            public Node(int data)
-            {
-                Data = data;
-            }
-        }
-
-        public static void PreOrderTravers(Node root, string tr = " ")
-        {
-            if (root != null)
-            {
-                Console.WriteLine($"{tr} {root.Data}");
-                PreOrderTravers(root.Left, $"{tr}{new string(' ', 3)}");
-                PreOrderTravers(root.Right, $"{tr}{new string(' ', 3)}");
-            }
-        }
-
-        public static Node Elements(int numbers)
-        {
-            Node newNode = new Node();
-
-            if (numbers == 0)
-            {
-                return null;
-            }
-            else
-            {
-                int numbersLeft = numbers / 2;
-                int numbersRight = numbers - numbersLeft - 1;
-                newNode.Data = new Random().Next(0, 1000);
-                newNode.Left = Elements(numbersLeft);
-                newNode.Right = Elements(numbersRight);
-            }
-
-            return newNode;
-        }
-
-        private static void BFS(Node tree)
-        {
-            Queue<Node> bfs = new Queue<Node>();
-            bfs.Enqueue(tree);
-            while (bfs.Count > 0)
-            {
-                tree = bfs.Dequeue();
-                Console.Write(tree.Data + " ");
-
-                if (tree.Left != null)
-                {
-                    bfs.Enqueue(tree.Left);
-                }
-
-                if (tree.Right != null)
-                {
-                    bfs.Enqueue(tree.Right);
-                }
-            }
+            Console.WriteLine("Укажите размер прямоугольного поля размера M на N клеток:");
+            Console.Write("M = ");
+            int m = int.Parse(Console.ReadLine());
+            Console.Write("N = ");
+            int n = int.Parse(Console.ReadLine());
             Console.WriteLine();
+            return (m, n);
         }
 
-        public static void DFS(Node tree)
+        static void PrintBoard(int m, int n, int[,] a)
         {
-            if (tree == null)
+            for (int i = 0; i < m; i++)
             {
-                return;
+                for (int j = 0; j < n; j++)
+                {
+                    Console.Write($"{ a[i, j],5}");
+                }
+                Console.Write("\r\n");
+            }
+        }
+
+        static void Solve(int m, int n)
+        {
+            int[,] array = new int[m, n];
+
+            for (int i = 0; i < n; i++)
+            {
+                array[0, i] = 1;
             }
 
-            Console.Write(tree.Data + " ");
-            DFS(tree.Left);
-            DFS(tree.Right);
+            for (int i = 1; i < m; i++)
+            {
+                array[i, 0] = 1;
+                for (int j = 1; j < n; j++)
+                {
+                    array[i, j] = array[i, j - 1] + array[i - 1, j];
+                }
+            }
+
+            PrintBoard(m, n, array);
         }
+
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Строим сбалансированное дерево:");
-            Console.WriteLine();
+            int m, n;
+            (m, n) = GetBoardSize();
 
-            Node tree = Elements(15);
+            Solve(m, n);
 
-            PreOrderTravers(tree);
-
-            Console.WriteLine();
-            Console.WriteLine("Реализация BFS (breadth-first search)  — поиск в ширину:");
-            Console.WriteLine();
-
-            BFS(tree);
-
-            Console.WriteLine();
-            Console.WriteLine("Реализация DFS (deep-first search) — поиск в глубину:");
-            Console.WriteLine();
-
-            DFS(tree);
-
-            Console.WriteLine();
             Console.ReadKey();
         }
     }
